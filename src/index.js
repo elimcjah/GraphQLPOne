@@ -5,32 +5,27 @@ import {GraphQLServer} from 'graphql-yoga';
 // Type definitions
 const typeDefs = `
   type Query {
-    title: String!
-    price: Float!
-    releaseYear: Int
-    rating: Float
-    isStock: Boolean!
+    me: User!
+  }
+  
+  type User {
+    id: ID!
+    name: String!
+    email: String!
+    age: Int
   }
 `;
 
 // Resolver
 const resolvers = {
   Query: {
-    title() {
-      return 'The Tao of Pooh';
+    me() {
+      return {
+        id: '123098',
+        name: 'Michael',
+        email: 'Michael@example.net'
+      };
     },
-    price() {
-      return 12.99;
-    },
-    releaseYear() {
-      return 1998;
-    },
-    rating() {
-      return null;
-    },
-    isStock() {
-      return true;
-    }
   }
 };
 
