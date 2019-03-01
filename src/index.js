@@ -5,12 +5,11 @@ import {GraphQLServer} from 'graphql-yoga';
 // Type definitions
 const typeDefs = `
   type Query {
-    id: ID
     title: String!
     price: Float!
     releaseYear: Int
     rating: Float
-    inStock: Boolean!
+    isStock: Boolean!
   }
 `;
 
@@ -18,7 +17,7 @@ const typeDefs = `
 const resolvers = {
   Query: {
     title() {
-      return 'Mrs. Doubtfire';
+      return 'The Tao of Pooh';
     },
     price() {
       return 12.99;
@@ -29,7 +28,7 @@ const resolvers = {
     rating() {
       return null;
     },
-    inStock() {
+    isStock() {
       return true;
     }
   }
