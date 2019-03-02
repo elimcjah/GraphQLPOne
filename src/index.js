@@ -66,7 +66,7 @@ const typeDefs = `
   }
 `;
 
-// Resolver
+// Resolvers
 const resolvers = {
   Query: {
     me() {
@@ -123,4 +123,3 @@ const server = new GraphQLServer({
 server.start(() => {
   console.log('The server is up and running!');
 });
-
