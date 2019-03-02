@@ -3,17 +3,17 @@ import {GraphQLServer} from 'graphql-yoga';
 const users = [
     {
       id: '1',
-      name: 'Joe Dirt',
-      email: 'joe@joedirt.com',
+      name: 'Mekala Deanne',
+      email: 'mekala@smith.com',
       age: 57
     },{
       id: '2',
-      name: 'Happy Gilmore',
-      email: 'Happy@adamsandler.com'
+      name: 'Michael Gene',
+      email: 'mgm@yahoo.com'
     },{
       id: '3',
-      name: 'Deuce Bigalow',
-      email: 'deuce@bigs.com'
+      name: 'William Kyle',
+      email: 'cal@gmail.com'
     }
 ];
 
