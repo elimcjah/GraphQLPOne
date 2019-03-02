@@ -1,15 +1,53 @@
 import {GraphQLServer} from 'graphql-yoga';
 
+const users = [
+    {
+      id: '1',
+      name: 'Joe Dirt',
+      email: 'joe@joedirt.com',
+      age: 57
+    },{
+      id: '2',
+      name: 'Happy Gilmore',
+      email: 'Happy@adamsandler.com'
+    },{
+      id: '3',
+      name: 'Deuce Bigalow',
+      email: 'deuce@bigs.com'
+    }
+];
+
+const posts = [
+  {
+    id: '1',
+    title: 'This is a title',
+    body: 'Body of the post is here.',
+    published: true,
+    author: '3'
+  },{
+    id: '2',
+    title: 'E equals MC Squared',
+    body: 'Albert Einstein',
+    published: false,
+    author: '1'
+  },{
+    id: '3',
+    title: 'The Law of Murphy',
+    body: 'Murphy had many laws.  This one is the Best.',
+    published: false,
+    author: '2'
+  }
+];
+
 
 // 5 Scalar types in GraphQL - String, Boolean, Int, Float, ID
 // Type definitions
 const typeDefs = `
   type Query {
-    add(numbers: [Float!]!): Float!
-    grades: [Int!]!
-    greeting(name: String, position: String): String!
     me: User!
     post: Post!
+    posts(query: String): [Post!]!
+    users(query: String): [User!]!
   }
   
   type User {
@@ -24,24 +62,13 @@ const typeDefs = `
     title: String!
     body: String!
     published: Boolean!
+    author: User!
   }
 `;
 
 // Resolver
 const resolvers = {
   Query: {
-    add(parent, args, ctx, info) {
-      if (args.numbers) {
-        return args.numbers.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue;
-        })
-      } else {
-        return 0;
-      }
-    },
-    grades(parent, args, ctx, info){
-      return [80, 90, 100];
-    },
     me() {
       return {
         id: '123098',
@@ -54,15 +81,36 @@ const resolvers = {
         id: '123487',
         title: 'The Thing',
         body: 'Lorem Ipsum',
-        published: true
+        published: true,
+        author: '2'
       }
     },
-    greeting(parent, args, ctx, info) {
-      if (args.name && args.position) {
-        return `Jello ${args.name}! You are my favorite ${args.position}!`;
+    posts(parent, args, ctx, info) {
+      if (!args.query) {
+        return posts;
       } else {
-        return 'Jello';
+        return posts.filter((post) => {
+          const isTitleMatch = post.title.toLowerCase().includes(args.query.toLowerCase());
+          const isBodyMatch = post.body.toLowerCase().includes(args.query.toLowerCase());
+          return isBodyMatch || isTitleMatch;
+        });
       }
+    },
+    users(parent, args, ctx, info) {
+      if (!args.query) {
+        return users;
+      } else {
+        return users.filter((user) => {
+          return user.name.toLowerCase().includes(args.query.toLowerCase());
+        })
+      }
+    }
+  },
+  Post: {
+    author(parent, args, ctx, info) {
+      return users.find((user) => {
+        return user.id === parent.author;
+      })
     }
   }
 };
