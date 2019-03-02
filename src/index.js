@@ -73,7 +73,7 @@ const resolvers = {
       return {
         id: '123098',
         name: 'Michael',
-        email: 'Michael@example.net'
+        email: 'Michael@gmail.com'
       };
     },
     post() {
