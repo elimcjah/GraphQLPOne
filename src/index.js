@@ -8,7 +8,7 @@ const users = [
       age: 57
     },{
       id: '2',
-      name: 'Michael Gene',
+      name: 'Michael Gene McClendon',
       email: 'mgm@yahoo.com'
     },{
       id: '3',
