@@ -12,7 +12,7 @@ const users = [
       email: 'mgm@yahoo.com'
     },{
       id: '3',
-      name: 'William Kyle',
+      name: 'William Kyle McClendon',
       email: 'cal@gmail.com'
     }
 ];
