@@ -1,5 +1,21 @@
 import {GraphQLServer} from 'graphql-yoga';
 
+const comments = [
+    {
+      id: '1',
+      text: 'text for 1'
+    },{
+      id: '2',
+      text: 'text for 2'
+    },{
+      id: '3',
+      text: 'text for 3'
+    },{
+      id: '4',
+      text: 'text for 4'
+    }
+];
+
 const users = [
     {
       id: '1',
@@ -48,14 +64,12 @@ const typeDefs = `
     post: Post!
     posts(query: String): [Post!]!
     users(query: String): [User!]!
+    comments: [Comment!]!
   }
   
-  type User {
+  type Comment {
     id: ID!
-    name: String!
-    email: String!
-    age: Int
-    posts: [Post!]!
+    text: String!
   }
   
   type Post {
@@ -64,6 +78,15 @@ const typeDefs = `
     body: String!
     published: Boolean!
     author: User!
+    comments: [Comment]!
+  } 
+  
+  type User {
+    id: ID!
+    name: String!
+    email: String!
+    age: Int
+    posts: [Post!]!
   }
 `;
 
@@ -105,7 +128,10 @@ const resolvers = {
           return user.name.toLowerCase().includes(args.query.toLowerCase());
         })
       }
-    }
+    },
+    comments(parent, args, ctx, info) {
+      return comments;
+    },
   },
   Post: {
     author(parent, args, ctx, info) {
