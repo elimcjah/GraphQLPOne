@@ -53,7 +53,7 @@ const posts = [
     id: '2',
     title: 'E equals MC Squared',
     body: 'Albert Einstein',
-    published: false,
+    published: true,
     author: '1'
   },{
     id: '3',
@@ -77,9 +77,15 @@ const typeDefs = `
   }
   
   type Mutation {
-    createUser(name: String!, email: String!, age: Int): User!
+    createUser(data: CreateUserInput): User!
     createPost(title: String!, body: String!, published: Boolean!, author: ID!): Post!
     createComment(text: String!, author: ID!, post: ID!): Comment!
+  }
+  
+  input CreateUserInput {
+    name: String!
+    email: String!
+    age: Int
   }
   
   type Comment {
@@ -155,7 +161,7 @@ const resolvers = {
     createUser(parent, args, ctx, info) {
 
       const emailTaken = users.some((user) => {
-        return user.email === args.email;
+        return user.email === args.data.email;
       })
 
       if(emailTaken) {
@@ -164,9 +170,7 @@ const resolvers = {
 
       const user = {
         id: uuidv4(),
-        name: args.name,
-        email: args.email,
-        age: args.age
+        ...args.data
       };
 
       users.push(user);
@@ -184,10 +188,7 @@ const resolvers = {
 
       const post = {
         id: uuidv4(),
-        title: args.title,
-        body: args.body,
-        published: args.published,
-        author: args.author
+        ...args
       };
 
       posts.push(post);
@@ -213,9 +214,7 @@ const resolvers = {
 
       const comment = {
         id: uuidv4(),
-        text: args.text,
-        author: args.author,
-        post: args.post
+        ...args
       };
 
       comments.push(comment);
