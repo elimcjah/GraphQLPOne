@@ -42,31 +42,65 @@ const Mutation = {
         return deletedUsers[0];
     },
     updateUser(parent, args, { db }, info) {
-        const { id, data } = args;
+        const { id, userEdits } = args;
+
         const user = db.users.find((user) => user.id === id);
 
         if (!user) {
             throw new Error('User not found.');
         }
 
-        if (typeof data.email === 'string') {
-            const emailTaken = db.users.some((user) => user.email === data.email);
+        if (typeof userEdits.email === 'string') {
+            const emailTaken = db.users.some((user) => user.email === userEdits.email);
 
             if (emailTaken) {
                 throw new Error('Email already in use');
             }
 
-            user.email = data.email;
+            user.email = userEdits.email;
         }
 
-        if (typeof data.name === 'string') {
-            user.name = data.name;
+        if (typeof userEdits.name === 'string') {
+            user.name = userEdits.name;
         }
 
-        if (typeof data.age !== 'undefined') {
-            user.age = data.age;
+        if (typeof userEdits.age !== 'undefined') {
+            user.age = userEdits.age;
         }
         return user;
+    },
+    updatePost(parent, args, { db }, info){
+        const { id, postEdits } = args;
+
+        const post = db.posts.find((post) => post.id === id);
+
+        if (!post) {
+            throw new Error('Post not found');
+        }
+
+        if (typeof postEdits.title === 'string') {
+            post.title = postEdits.title;
+        }
+
+        if (typeof postEdits.body === 'string') {
+            post.body = postEdits.body;
+        }
+
+        if (typeof postEdits.published === 'boolean') {
+            post.published = postEdits.published;
+        }
+
+        if (typeof postEdits.author === 'string') {
+            const userIndex = db.users.findIndex((user) => user.id === postEdits.author);
+
+            if (userIndex === -1) {
+                throw new Error('Author not found.');
+            }
+
+            post.author = postEdits.author;
+        }
+
+        return post;
     },
     deletePost(parent, args, { db }, info) {
         const postIndex = db.posts.findIndex((post) => post.id === args.id);

@@ -1,46 +1,3 @@
-type Query {
-    me: User!
-    post: Post!
-    posts(query: String): [Post!]!
-    users(query: String): [User!]!
-    comments: [Comment!]!
-}
-
-type Mutation {
-    createUser(user: CreateUserInput): User!
-    deleteUser(id: ID!): User!
-    updateUser(id: ID!, data: UpdateUserInput!): User!
-    createPost(post: CreatePostInput): Post!
-    deletePost(id: ID!): Post!
-    createComment(comment: CreateCommentInput): Comment!
-    deleteComment(id: ID!): Comment!
-}
-
-input CreateUserInput {
-    name: String!
-    email: String!
-    age: Int
-}
-
-input UpdateUserInput {
-    name: String
-    email: String
-    age: Int
-}
-
-input CreatePostInput {
-    title: String!
-    body: String!
-    published: Boolean!
-    author: ID!
-}
-
-input CreateCommentInput {
-    text: String!
-    author: ID!
-    post: ID!
-}
-
 type Comment {
     id: ID!
     text: String!
@@ -57,6 +14,25 @@ type Post {
     comments: [Comment!]!
 }
 
+type Query {
+    me: User!
+    post: Post!
+    posts(query: String): [Post!]!
+    users(query: String): [User!]!
+    comments: [Comment!]!
+}
+
+type Mutation {
+    createUser(user: CreateUserInput): User!
+    deleteUser(id: ID!): User!
+    updateUser(id: ID!, userEdits: UpdateUserInput!): User!
+    createPost(post: CreatePostInput): Post!
+    deletePost(id: ID!): Post!
+    updatePost(id: ID!, postEdits: UpdatePostInput!): Post!
+    createComment(comment: CreateCommentInput): Comment!
+    deleteComment(id: ID!): Comment!
+}
+
 type User {
     id: ID!
     name: String!
@@ -65,3 +41,36 @@ type User {
     posts: [Post!]!
     comments: [Comment!]!
 }
+
+input CreateCommentInput {
+    text: String!
+    author: ID!
+    post: ID!
+}
+
+input CreatePostInput {
+    title: String!
+    body: String!
+    published: Boolean!
+    author: ID!
+}
+
+input CreateUserInput {
+    name: String!
+    email: String!
+    age: Int
+}
+
+input UpdatePostInput {
+    title: String
+    body: String
+    published: Boolean
+    author: ID
+}
+
+input UpdateUserInput {
+    name: String
+    email: String
+    age: Int
+}
+
