@@ -90,17 +90,21 @@ const Mutation = {
             post.published = postEdits.published;
         }
 
-        if (typeof postEdits.author === 'string') {
-            const userIndex = db.users.findIndex((user) => user.id === postEdits.author);
+        return post;
+    },
+    updateComment(parent, args, { db }, info){
+        const {id, textEdits} = args;
 
-            if (userIndex === -1) {
-                throw new Error('Author not found.');
-            }
+        const comment = db.comments.find((comment) => comment.id === id);
 
-            post.author = postEdits.author;
+        if (!comment) {
+            throw new Error('Comment not found.');
         }
 
-        return post;
+        if (typeof textEdits.text === 'string') {
+            comment.text = textEdits.text;
+        }
+        return comment;
     },
     deletePost(parent, args, { db }, info) {
         const postIndex = db.posts.findIndex((post) => post.id === args.id);

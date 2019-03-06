@@ -1,76 +1,80 @@
 type Comment {
     id: ID!
-    text: String!
     author: User!
     post: Post!
+    text: String!
 }
 
 type Post {
     id: ID!
-    title: String!
-    body: String!
-    published: Boolean!
     author: User!
+    body: String!
     comments: [Comment!]!
+    published: Boolean!
+    title: String!
 }
 
 type Query {
+    comments: [Comment!]!
     me: User!
     post: Post!
     posts(query: String): [Post!]!
     users(query: String): [User!]!
-    comments: [Comment!]!
 }
 
 type Mutation {
-    createUser(user: CreateUserInput): User!
-    deleteUser(id: ID!): User!
-    updateUser(id: ID!, userEdits: UpdateUserInput!): User!
-    createPost(post: CreatePostInput): Post!
-    deletePost(id: ID!): Post!
-    updatePost(id: ID!, postEdits: UpdatePostInput!): Post!
     createComment(comment: CreateCommentInput): Comment!
+    createPost(post: CreatePostInput): Post!
+    createUser(user: CreateUserInput): User!
     deleteComment(id: ID!): Comment!
+    deletePost(id: ID!): Post!
+    deleteUser(id: ID!): User!
+    updateComment(id: ID!, textEdits: UpdateCommentInput!): Comment!
+    updatePost(id: ID!, postEdits: UpdatePostInput!): Post!
+    updateUser(id: ID!, userEdits: UpdateUserInput!): User!
 }
 
 type User {
     id: ID!
-    name: String!
-    email: String!
     age: Int
-    posts: [Post!]!
     comments: [Comment!]!
+    email: String!
+    name: String!
+    posts: [Post!]!
 }
 
 input CreateCommentInput {
-    text: String!
     author: ID!
     post: ID!
+    text: String!
 }
 
 input CreatePostInput {
-    title: String!
+    author: ID!
     body: String!
     published: Boolean!
-    author: ID!
+    title: String!
 }
 
 input CreateUserInput {
-    name: String!
-    email: String!
     age: Int
+    email: String!
+    name: String!
+}
+
+input UpdateCommentInput {
+    text: String
 }
 
 input UpdatePostInput {
-    title: String
     body: String
     published: Boolean
-    author: ID
+    title: String
 }
 
 input UpdateUserInput {
-    name: String
-    email: String
     age: Int
+    email: String
+    name: String
 }
 
