@@ -20,7 +20,12 @@ const Mutation = {
 
         db.comments.push(comment);
 
-        pubSub.publish(`comment ${args.comment.post}`, {comment});
+        pubSub.publish(`comment ${args.comment.post}`, {
+            comment: {
+                mutation: 'CREATED',
+                data: comment
+            }
+        });
 
         return comment;
     },
@@ -64,15 +69,21 @@ const Mutation = {
 
         return user;
     },
-    deleteComment(parnet, args, { db }, info){
+    deleteComment(parnet, args, { db, pubSub }, info){
         const commentIndex = db.comments.findIndex((comment) => comment.id === args.id);
 
         if (commentIndex === -1) {
             throw new Error('Comment not found.');
         }
-        const deletedComments = db.comments.splice(commentIndex, 1);
+        const [deletedComment] = db.comments.splice(commentIndex, 1);
+        pubSub.publish(`comment ${deletedComment.post}`, {
+            comment: {
+                mutation: 'DELETED',
+                data: deletedComment
+            }
+        });
 
-        return deletedComments[0];
+        return deletedComment;
     },
     deletePost(parent, args, { db, pubSub }, info) {
         const postIndex = db.posts.findIndex((post) => post.id === args.id);
@@ -118,7 +129,7 @@ const Mutation = {
 
         return deletedUsers[0];
     },
-    updateComment(parent, args, { db }, info){
+    updateComment(parent, args, { db, pubSub }, info){
         const {id, textEdits} = args;
 
         const comment = db.comments.find((comment) => comment.id === id);
@@ -130,26 +141,28 @@ const Mutation = {
         if (typeof textEdits.text === 'string') {
             comment.text = textEdits.text;
         }
+        pubSub.publish(`comment ${comment.post}`, {
+            comment: {
+                mutation: "UPDATED",
+                data: comment
+            }
+        });
         return comment;
     },
     updatePost(parent, args, { db, pubSub }, info){
         const { id, postEdits } = args;
-
         const post = db.posts.find((post) => post.id === id);
         const originalPost = { ...post };
 
         if (!post) {
             throw new Error('Post not found');
         }
-
         if (typeof postEdits.title === 'string') {
             post.title = postEdits.title;
         }
-
         if (typeof postEdits.body === 'string') {
             post.body = postEdits.body;
         }
-
         if (typeof postEdits.published === 'boolean') {
             post.published = postEdits.published;
 
@@ -177,32 +190,25 @@ const Mutation = {
                 }
             });
         }
-
         return post;
     },
     updateUser(parent, args, { db }, info) {
         const { id, userEdits } = args;
-
         const user = db.users.find((user) => user.id === id);
 
         if (!user) {
             throw new Error('User not found.');
         }
-
         if (typeof userEdits.email === 'string') {
             const emailTaken = db.users.some((user) => user.email === userEdits.email);
-
             if (emailTaken) {
                 throw new Error('Email already in use');
             }
-
             user.email = userEdits.email;
         }
-
         if (typeof userEdits.name === 'string') {
             user.name = userEdits.name;
         }
-
         if (typeof userEdits.age !== 'undefined') {
             user.age = userEdits.age;
         }
