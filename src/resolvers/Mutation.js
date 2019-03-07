@@ -24,7 +24,7 @@ const Mutation = {
 
         return comment;
     },
-    createPost(parent, args, { db }, info) {
+    createPost(parent, args, { db, pubSub }, info) {
         const userExists = db.users.some((user) => user.id === args.post.author);
 
         if (!userExists) {
@@ -37,7 +37,14 @@ const Mutation = {
         };
 
         db.posts.push(post);
-
+        if (args.post.published) {
+            pubSub.publish('post', {
+                post: {
+                    mutation: 'CREATED',
+                    data: post
+                }
+            });
+        }
         return post;
     },
     createUser(parent, args, { db }, info) {
@@ -67,18 +74,26 @@ const Mutation = {
 
         return deletedComments[0];
     },
-    deletePost(parent, args, { db }, info) {
+    deletePost(parent, args, { db, pubSub }, info) {
         const postIndex = db.posts.findIndex((post) => post.id === args.id);
 
         if (postIndex === -1) {
             throw new Error('Post not found.');
         }
 
-        const deletedPosts = db.posts.splice(postIndex, 1);
-
+        const [post] = db.posts.splice(postIndex, 1);
         db.comments = db.comments.filter((comment) => comment.post !== args.id);
 
-        return deletedPosts[0];
+        if(post.published) {
+            pubSub.publish('post', {
+                post: {
+                    mutation: 'DELETED',
+                    data: post,
+                }
+            });
+        }
+
+        return post;
     },
     deleteUser(parent, args, { db }, info) {
         const userIndex = db.users.findIndex((user) => user.id === args.id);
@@ -117,10 +132,11 @@ const Mutation = {
         }
         return comment;
     },
-    updatePost(parent, args, { db }, info){
+    updatePost(parent, args, { db, pubSub }, info){
         const { id, postEdits } = args;
 
         const post = db.posts.find((post) => post.id === id);
+        const originalPost = { ...post };
 
         if (!post) {
             throw new Error('Post not found');
@@ -136,6 +152,30 @@ const Mutation = {
 
         if (typeof postEdits.published === 'boolean') {
             post.published = postEdits.published;
+
+            if(originalPost.published && !post.published) {
+                // deleted
+                pubSub.publish('post', {
+                    post: {
+                        mutation: 'DELETED',
+                        data: originalPost
+                    }
+                });
+            } else if (!originalPost.published && post.published) {
+                pubSub.publish('post', {
+                    post: {
+                        mutation: 'CREATED',
+                        data: post
+                    }
+                });
+            }
+        } else if (post.published) {
+            pubSub.publish('post', {
+                post: {
+                    mutation: 'UPDATED',
+                    data: post
+                }
+            });
         }
 
         return post;

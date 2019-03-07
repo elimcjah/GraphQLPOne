@@ -26,6 +26,11 @@ type Post {
     title: String!
 }
 
+type PostSubscriptionPayload {
+    mutation: String!
+    data: Post!
+}
+
 type Query {
     comments: [Comment!]!
     me: User!
@@ -35,8 +40,8 @@ type Query {
 }
 
 type Subscription {
-    count: Int!
     comment(postId: ID!): Comment!
+    post: PostSubscriptionPayload!
 }
 
 type User {
